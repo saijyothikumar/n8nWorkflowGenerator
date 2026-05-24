@@ -1,0 +1,62 @@
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-chat-panel',
+  standalone: true,
+  template: `
+    <section class="panel">
+      <header>
+        <h2>Chat Area</h2>
+        <p>Placeholder for conversation and chat controls.</p>
+      </header>
+
+      <div class="panel-body">
+        <div class="placeholder">Chat area will appear here.</div>
+      </div>
+    </section>
+  `,
+  styles: [
+    `
+      .panel {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1.25rem;
+        background: #ffffff;
+        border: 1px solid #d8dee9;
+        border-radius: 1rem;
+        min-height: 24rem;
+        box-shadow: 0 1.5rem 3rem rgba(15, 23, 42, 0.07);
+      }
+
+      header {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+      }
+
+      h2 {
+        margin: 0;
+        font-size: 1.25rem;
+      }
+
+      .panel-body {
+        flex: 1;
+        display: grid;
+        place-items: center;
+        min-height: 12rem;
+      }
+
+      .placeholder {
+        width: 100%;
+        padding: 1.25rem;
+        background: #f5f7ff;
+        border: 1px dashed #c0c7de;
+        border-radius: 0.85rem;
+        color: #556182;
+        text-align: center;
+      }
+    `
+  ]
+})
+export class ChatPanelComponent {}

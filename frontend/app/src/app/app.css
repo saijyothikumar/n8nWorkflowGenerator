@@ -1,0 +1,55 @@
+﻿:host {
+  display: block;
+  min-height: 100dvh;
+  padding: 1rem;
+  box-sizing: border-box;
+  background: #f6f7fb;
+  color: #12131b;
+  font-family: Inter, system-ui, sans-serif;
+}
+
+.app-shell {
+  max-width: 1440px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.app-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: 0.875rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #5c6b8a;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(2rem, 2.5vw, 3rem);
+}
+
+.subtitle {
+  margin: 0;
+  max-width: 42rem;
+  color: #4f5b78;
+}
+
+.app-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 1fr) minmax(280px, 1.2fr);
+  gap: 1rem;
+  align-items: stretch;
+}
+
+@media (max-width: 900px) {
+  .app-layout {
+    grid-template-columns: 1fr;
+  }
+}

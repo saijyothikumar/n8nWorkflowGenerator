@@ -1,0 +1,5 @@
+node_modules
+frontend/app/node_modules
+dist
+build
+**/*.spec.ts
