@@ -1,15 +1,14 @@
 services:
-  - type: web_service
+  - type: web
     name: n8nproject-fastapi
-    env: python
-    branch: main
+    runtime: python
     rootDir: backend
-    buildCommand: pip install -r requirements.txt
+    buildCommand: pip install -r app/requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: N8N_BASE_URL
-        fromSecret: N8N_BASE_URL
+        sync: false
       - key: N8N_API_KEY
-        fromSecret: N8N_API_KEY
+        sync: false
       - key: LLM_API_KEY
-        fromSecret: LLM_API_KEY
+        sync: false
