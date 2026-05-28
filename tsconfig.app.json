@@ -1,0 +1,7 @@
+{
+  "extends": "./frontend/tsconfig.app.json",
+  "compilerOptions": {
+    "rootDir": "./frontend/src"
+  },
+  "files": []
+}

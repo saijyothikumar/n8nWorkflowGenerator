@@ -9,7 +9,7 @@ services:
       - .env
 
   web:
-    build: ./frontend/app
+    build: ./frontend
     ports:
       - "4200:4200"
     env_file:
