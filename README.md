@@ -115,7 +115,6 @@ cd frontend/app
 npm run dev      # Development server
 npm run build    # Production build
 npm run lint     # ESLint
-npm run format   # Prettier formatting
 ```
 
 ### Backend Development

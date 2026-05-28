@@ -1,0 +1,38 @@
+<button class="settings-toggle" type="button" (click)="toggleDrawer()">
+  {{ drawerOpen ? 'Close N8N settings' : 'Open N8N settings' }}
+</button>
+
+<aside class="settings-drawer" [class.open]="drawerOpen">
+  <div class="drawer-header">
+    <h2>N8N Connection</h2>
+    <button class="close-button" type="button" (click)="toggleDrawer()">×</button>
+  </div>
+
+  <div class="drawer-body">
+    <label>
+      N8N Instance URL
+      <input type="url" [(ngModel)]="n8nUrl" placeholder="https://your-n8n.example.com" />
+    </label>
+
+    <label>
+      API Key
+      <input type="text" [(ngModel)]="apiKey" placeholder="Enter your N8N API key" />
+    </label>
+
+    <button class="connect-button" type="button" (click)="connect()" [disabled]="connection.state.loading">
+      {{ connection.state.loading ? 'Connecting…' : 'Connect' }}
+    </button>
+
+    <div class="status">
+      <p *ngIf="connection.state.connected" class="success">
+        Connected ✓
+      </p>
+      <p *ngIf="connection.state.nodeTypesCount > 0" class="info">
+        {{ connection.state.nodeTypesCount }} node types loaded
+      </p>
+      <p *ngIf="connection.state.errorMessage" class="error">
+        {{ connection.state.errorMessage }}
+      </p>
+    </div>
+  </div>
+</aside>

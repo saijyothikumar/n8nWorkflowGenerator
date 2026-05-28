@@ -1,0 +1,39 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: #ffffff;
+  border: 1px solid #d8dee9;
+  border-radius: 1rem;
+  min-height: 24rem;
+  box-shadow: 0 1.5rem 3rem rgba(15, 23, 42, 0.07);
+}
+
+header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.panel-body {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  min-height: 12rem;
+}
+
+.placeholder {
+  width: 100%;
+  padding: 1.25rem;
+  background: #faf9ff;
+  border: 1px dashed #c8d4ff;
+  border-radius: 0.85rem;
+  color: #4c4f72;
+  text-align: center;
+}
