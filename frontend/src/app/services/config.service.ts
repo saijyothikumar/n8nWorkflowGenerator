@@ -14,6 +14,7 @@ export class ConfigService {
   }
 
   get apiUrl(): string {
-    return this.config?.apiUrl ?? '';
+    const url = this.config?.apiUrl;
+    return typeof url === 'string' ? url.trim().replace(/\/+$|\s+$/g, '') : '';
   }
 }

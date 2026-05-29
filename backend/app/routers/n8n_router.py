@@ -32,6 +32,9 @@ async def connect_n8n(payload: N8NConnectRequest, request: Request) -> Dict[str,
             "base_url": payload.n8n_url.rstrip("/"),
             "api_key": payload.api_key,
         }
+        # Synchronously fetch and cache node types to prevent race condition
+        # when get_node_categories is called immediately after connect
+        await n8n_service.fetch_node_types(payload.n8n_url, payload.api_key)
     return result
 
 
