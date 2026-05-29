@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
+import { ConfigService } from './config.service';
 
 export interface N8NConnectionState {
   baseUrl: string;
@@ -13,6 +14,8 @@ export interface N8NConnectionState {
 
 @Injectable({ providedIn: 'root' })
 export class N8NConnectionService {
+  private readonly STORAGE_KEY = 'n8n_credentials';
+
   state: N8NConnectionState = {
     baseUrl: '',
     apiKey: '',
@@ -22,7 +25,68 @@ export class N8NConnectionService {
     loading: false,
   };
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private configService: ConfigService
+  ) {}
+
+  /**
+   * Persist credentials to sessionStorage after successful connection
+   */
+  private _saveCredentials(baseUrl: string, apiKey: string): void {
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.setItem(
+        this.STORAGE_KEY,
+        JSON.stringify({ baseUrl, apiKey })
+      );
+    }
+  }
+
+  /**
+   * Load credentials from sessionStorage
+   */
+  private _loadCachedCredentials(): { baseUrl: string; apiKey: string } | null {
+    if (typeof sessionStorage === 'undefined') {
+      return null;
+    }
+    try {
+      const cached = sessionStorage.getItem(this.STORAGE_KEY);
+      return cached ? JSON.parse(cached) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Attempt to auto-reconnect using cached credentials (called on app startup)
+   */
+  async autoReconnect(): Promise<boolean> {
+    const cached = this._loadCachedCredentials();
+    if (!cached || !cached.baseUrl || !cached.apiKey) {
+      return false;
+    }
+
+    // Silently try to reconnect without showing loading state or errors
+    try {
+      const result = await firstValueFrom(
+        this.http.post<any>(`${this.configService.apiUrl}/api/n8n/connect`, {
+          n8n_url: cached.baseUrl,
+          api_key: cached.apiKey,
+        })
+      );
+
+      if (result?.success) {
+        this.state.baseUrl = cached.baseUrl;
+        this.state.apiKey = cached.apiKey;
+        this.state.connected = true;
+        void this._loadNodeTypesInBackground();
+        return true;
+      }
+    } catch {
+      // Silently fail; user will be prompted to reconnect if needed
+    }
+    return false;
+  }
 
   async connect(n8nUrl: string, apiKey: string): Promise<boolean> {
     this.state.loading = true;
@@ -34,7 +98,7 @@ export class N8NConnectionService {
 
     try {
       const result = await firstValueFrom(
-        this.http.post<any>('/api/n8n/connect', {
+        this.http.post<any>(`${this.configService.apiUrl}/api/n8n/connect`, {
           n8n_url: this.state.baseUrl,
           api_key: this.state.apiKey,
         })
@@ -46,6 +110,8 @@ export class N8NConnectionService {
       }
 
       this.state.connected = true;
+      // Save credentials on successful connection
+      this._saveCredentials(this.state.baseUrl, this.state.apiKey);
       void this._loadNodeTypesInBackground();
       return true;
     } catch (error: any) {
@@ -57,11 +123,11 @@ export class N8NConnectionService {
   }
 
   async loadNodeTypes(): Promise<any> {
-    return firstValueFrom(this.http.get<any>('/api/n8n/node-types'));
+    return firstValueFrom(this.http.get<any>(`${this.configService.apiUrl}/api/n8n/node-types`));
   }
 
   async getNodeCategories(): Promise<any> {
-    return firstValueFrom(this.http.get<any>('/api/n8n/node-categories'));
+    return firstValueFrom(this.http.get<any>(`${this.configService.apiUrl}/api/n8n/node-categories`));
   }
 
   private async _loadNodeTypesInBackground(): Promise<void> {

@@ -8,6 +8,7 @@ import { provideAppInitializer } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
 import { ConfigService, AppConfig as RuntimeConfig } from './services/config.service';
+import { N8NConnectionService } from './services/n8n-connection.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -29,6 +30,15 @@ export const appConfig: ApplicationConfig = {
       // Prevent long hangs during prerender or network issues by racing a short timeout
       const timeout = new Promise((res) => setTimeout(res, 2000));
       return Promise.race([loadPromise, timeout]);
+    }),
+    provideAppInitializer(async () => {
+      // Skip on server-side
+      if (typeof window === 'undefined') {
+        return;
+      }
+      // After config is loaded, attempt to auto-reconnect using cached credentials
+      const n8nService = inject(N8NConnectionService);
+      await n8nService.autoReconnect();
     })
   ]
 };

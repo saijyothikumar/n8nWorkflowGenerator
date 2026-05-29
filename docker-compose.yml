@@ -10,6 +10,8 @@ services:
 
   web:
     build: ./frontend
+    depends_on:
+      - api
     ports:
       - "4200:4200"
     env_file:
