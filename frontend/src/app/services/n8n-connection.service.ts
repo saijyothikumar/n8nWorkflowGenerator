@@ -3,6 +3,16 @@ import { Injectable } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { ConfigService } from './config.service';
 
+export interface ApiResponse<T = unknown> {
+  success?: boolean;
+  data?: T;
+  error?: unknown;
+}
+
+interface NodeTypesList {
+  data?: unknown[];
+}
+
 export interface N8NConnectionState {
   baseUrl: string;
   apiKey: string;
@@ -69,7 +79,7 @@ export class N8NConnectionService {
     // Silently try to reconnect without showing loading state or errors
     try {
       const result = await firstValueFrom(
-        this.http.post<any>(`${this.configService.apiUrl}/api/n8n/connect`, {
+        this.http.post<ApiResponse<unknown>>(`${this.configService.apiUrl}/api/n8n/connect`, {
           n8n_url: cached.baseUrl,
           api_key: cached.apiKey,
         })
@@ -98,7 +108,7 @@ export class N8NConnectionService {
 
     try {
       const result = await firstValueFrom(
-        this.http.post<any>(`${this.configService.apiUrl}/api/n8n/connect`, {
+        this.http.post<ApiResponse<unknown>>(`${this.configService.apiUrl}/api/n8n/connect`, {
           n8n_url: this.state.baseUrl,
           api_key: this.state.apiKey,
         })
@@ -114,20 +124,20 @@ export class N8NConnectionService {
       this._saveCredentials(this.state.baseUrl, this.state.apiKey);
       void this._loadNodeTypesInBackground();
       return true;
-    } catch (error: any) {
-      this.state.errorMessage = error?.message || 'Connection failed';
+    } catch (error: unknown) {
+      this.state.errorMessage = this._formatError(error) || 'Connection failed';
       return false;
     } finally {
       this.state.loading = false;
     }
   }
 
-  async loadNodeTypes(): Promise<any> {
-    return firstValueFrom(this.http.get<any>(`${this.configService.apiUrl}/api/n8n/node-types`));
+  async loadNodeTypes(): Promise<ApiResponse<unknown>> {
+    return firstValueFrom(this.http.get<ApiResponse<unknown>>(`${this.configService.apiUrl}/api/n8n/node-types`));
   }
 
-  async getNodeCategories(): Promise<any> {
-    return firstValueFrom(this.http.get<any>(`${this.configService.apiUrl}/api/n8n/node-categories`));
+  async getNodeCategories(): Promise<ApiResponse<unknown>> {
+    return firstValueFrom(this.http.get<ApiResponse<unknown>>(`${this.configService.apiUrl}/api/n8n/node-categories`));
   }
 
   private async _loadNodeTypesInBackground(): Promise<void> {
@@ -147,8 +157,8 @@ export class N8NConnectionService {
     if (Array.isArray(data)) {
       return data.length;
     }
-    if (data && typeof data === 'object' && 'data' in (data as any) && Array.isArray((data as any).data)) {
-      return (data as any).data.length;
+    if (data && typeof data === 'object' && 'data' in data && Array.isArray((data as NodeTypesList).data)) {
+      return (data as NodeTypesList).data!.length;
     }
     return 0;
   }
