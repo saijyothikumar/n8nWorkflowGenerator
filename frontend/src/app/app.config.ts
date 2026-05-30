@@ -24,7 +24,8 @@ export const appConfig: ApplicationConfig = {
         return Promise.resolve();
       }
       const http = inject(HttpClient);
-      const loadPromise = firstValueFrom(http.get<RuntimeConfig>('/assets/config.json'))
+      const loadPromise = firstValueFrom(http.get<RuntimeConfig>('/assets/config.local.json'))
+        .catch(() => firstValueFrom(http.get<RuntimeConfig>('/assets/config.json')))
         .then((c) => cfg.set(c))
         .catch(() => {});
       // Prevent long hangs during prerender or network issues by racing a short timeout
